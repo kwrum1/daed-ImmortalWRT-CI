@@ -13,6 +13,34 @@ EOF
 }
 
 ########################################
+# 固定 kernel 6.18 新增 perf 选项
+########################################
+
+function pin_arm_perf_kernel_config() {
+  local target
+  target=$(grep -m 1 -oP '^CONFIG_TARGET_qualcommax_\K[[:alnum:]_]+(?=\=y)' "$GITHUB_WORKSPACE/Config/${WRT_CONFIG}.txt")
+
+  local kernel_config="target/linux/qualcommax/${target}/config-default"
+  if [ ! -f "$kernel_config" ]; then
+    echo "skip kernel perf config: $kernel_config not found"
+    return 0
+  fi
+
+  cat >> "$kernel_config" <<'EOF'
+
+# Kernel 6.18 eBPF/BTF perf dependencies
+# CONFIG_ARM64_BRBE is not set
+# CONFIG_ARM_CCI_PMU is not set
+# CONFIG_ARM_CCN is not set
+# CONFIG_ARM_CMN is not set
+# CONFIG_ARM_NI is not set
+# CONFIG_ARM_SMMU_V3_PMU is not set
+# CONFIG_ARM_DSU_PMU is not set
+# CONFIG_ARM_SPE_PMU is not set
+EOF
+}
+
+########################################
 # 修改内核大小
 ########################################
 
@@ -51,6 +79,9 @@ function generate_config() {
   # 内核大小
   set_kernel_size
 
+  # kernel 6.18 perf config
+  pin_arm_perf_kernel_config
+
   # 写入 kernel config
   cat_kernel_config "target/linux/qualcommax/${target}/config-default"
 
@@ -73,7 +104,7 @@ sed -i "s/luci-theme-bootstrap/luci-theme-$WRT_THEME/g" $(find ./feeds/luci/coll
 #修改immortalwrt.lan关联IP
 sed -i "s/192\.168\.[0-9]*\.[0-9]*/$WRT_IP/g" $(find ./feeds/luci/modules/luci-mod-system/ -type f -name "flash.js")
 #添加编译日期标识
-sed -i "s/(\(luciversion || ''\))/(\1) + (' \/ $WRT_MARK-$WRT_DATE')/g" $(find ./feeds/luci/modules/luci-mod-status/ -type f -name "10_system.js")
+sed -i "s/($(luciversion || ''))/(\1) + (' \/ $WRT_MARK-$WRT_DATE')/g" $(find ./feeds/luci/modules/luci-mod-status/ -type f -name "10_system.js")
 
 WIFI_SH=$(find ./target/linux/{mediatek/filogic,qualcommax}/base-files/etc/uci-defaults/ -type f -name "*set-wireless.sh" 2>/dev/null)
 WIFI_UC="./package/network/config/wifi-scripts/files/lib/wifi/mac80211.uc"
