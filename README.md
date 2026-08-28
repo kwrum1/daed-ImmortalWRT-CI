@@ -36,7 +36,7 @@ https://drive.wrt.moe/uboot/mediatek
 
 固件信息里的时间为编译开始的时间，方便核对上游源码提交时间。
 
-MEDIATEK系列、QUALCOMMAX系列、ROCKCHIP系列、X86系列。
+MEDIATEK系列、QUALCOMMAX系列nss-fw/ppe可供选择、ROCKCHIP系列、X86系列。
 
 # 目录简要说明
 
@@ -47,8 +47,6 @@ Scripts——自定义脚本
 Config——自定义配置
 
 # 大鹅说明
-
-QUALCOMMAX系列有nss-fw/ppe版本可供选择
 
 已知ipq60xx的PPE会和大鹅冲突
 
