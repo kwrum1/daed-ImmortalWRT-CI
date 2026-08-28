@@ -46,3 +46,9 @@ Scripts——自定义脚本
 
 Config——自定义配置
 
+# 大鹅说明
+
+QUALCOMMAX系列有nss-fw/ppe版本可供选择
+
+已知ipq60xx的PPE会和大鹅冲突
+
